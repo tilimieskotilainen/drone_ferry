@@ -60,6 +60,6 @@ def read_compass():
         #Wait 0.1 seconds before reading the compass again
         time.sleep(0.1)
         
-#For testing the code, call the read_compass function on load if this script is not being executed standalone, ie not from another script.
+#For testing the code, call the read_compass function on load if this script is being executed standalone, ie not from another script.
 if __name__ == "__main__":
     read_compass()
