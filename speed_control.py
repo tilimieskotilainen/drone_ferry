@@ -36,7 +36,4 @@ def stop():
     print("Stopped")
      
 if  __name__ == '__main__':
-    try:
-        propulsion(20)
-    except KeyboardInterrupt:
-        stop()
+    propulsion(10)

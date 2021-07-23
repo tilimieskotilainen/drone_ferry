@@ -25,7 +25,7 @@ crumbs_left = 10 #Arbitrary number
 
 dist_bc = 0
 
-status = "jotain"
+#status = "jotain"
 
 #Calculates the bearing and relative bearing from the first coordinate to the second coordinate, considering current heading
 def angles(from_coord, to_coord, heading):
@@ -65,7 +65,7 @@ def angles(from_coord, to_coord, heading):
 
 
 
-def captain(crumbs, closest_plus):
+def captain(crumbs, closest_plus, status):
     global dist_bc
     location_now = read_gps.current_min #Find out current location for plotting
     while status == "run":

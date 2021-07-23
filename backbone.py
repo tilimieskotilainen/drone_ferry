@@ -1,6 +1,6 @@
 #This is the backbone of the code, initiating the various stages of the journey based on trigger events
 
-status = "init"
+status = ["init"]
 
 import json
 import threading
@@ -36,7 +36,7 @@ read_gps_thread = threading.Thread(target=read_gps.read_gps, args=(), daemon=Tru
 read_gps_thread.start() # Start GPS thread
 read_compass_thread = threading.Thread(target=compass_reader.read_compass, args=(), daemon=True) #Define compass thread
 read_compass_thread.start() # Start compass thread
-steering_thread = threading.Thread(target=steering_servo.steer_direction, args=(), daemon=True) #Define compass thread
+steering_thread = threading.Thread(target=steering_servo.steer_direction, args=(status[0]), daemon=True) #Define compass thread
 steering_thread.start() # Start compass thread
 cam_nav = threading.Thread(target=shoot_and_calculate.calculate_diff, daemon=True)
 cam_nav.start()
@@ -86,7 +86,7 @@ def run(stages):
     
     global cur_stage
     
-    if stages["retreat"] == True and status == "run":
+    if stages["retreat"] == True and status[0] == "run":
         print("Retreat started")
         cur_stage = "Retreat"
         shoot_and_calculate.detect = True
@@ -94,19 +94,19 @@ def run(stages):
         print("Retreat ended")
         pass
     
-    if stages["turn"] == True and status == "run":
+    if stages["turn"] == True and status[0] == "run":
         print("Turn started")
         cur_stage = "Turn"
         print("Turn ended")
         pass
 
-    if stages["gps_cruise"] == True and status == "run":
+    if stages["gps_cruise"] == True and status[0] == "run":
         print("GPS Cruise started")
         cur_stage = "GPS Cruise"
-        gps_cruise.captain(waypoints_list, closest_plus)
+        gps_cruise.captain(waypoints_list, closest_plus, status, status[0])
         print("GPS Cruise ended")
     
-    if stages["approach"] == True and status == "run":
+    if stages["approach"] == True and status[0] == "run":
         print("Approach started")
         cur_stage = "Approach"
         shoot_and_calculate.detect = True
@@ -123,7 +123,7 @@ async def test(websocket, path):
     global status
     while True:
         try:
-            send_dict = {"config":config, "status":status, "cur_stage":cur_stage, "wp":route_points, "wp_num":wp_num, "heading":round(compass_reader.heading, 0), "gps":read_gps.current_min, "dist":trip_dist, "closest_bc":breadcrumb_calculator.closest_index}
+            send_dict = {"config":config, "status":status[0], "cur_stage":cur_stage, "wp":route_points, "wp_num":wp_num, "heading":round(compass_reader.heading, 0), "gps":read_gps.current_min, "dist":trip_dist, "closest_bc":breadcrumb_calculator.closest_index}
             send_json = json.dumps(send_dict)
             await websocket.send(send_json)
             print("Send dict:", send_dict)
@@ -146,27 +146,25 @@ async def test(websocket, path):
                 scs.close() #Close file
 
             elif recv_dict["control"] == "waiting":
-                status = "waiting"
+                status[0] = "waiting"
 
             elif recv_dict["control"] == "run":
 #                print("run started")
-                steering_servo.status = "run"
-                gps_cruise.status = "run" #Used to have all running threads to check on every loop before continuing
+#                gps_cruise.status = "run" #Used to have all running threads to check on every loop before continuing
 #                print("gps cruise status updated")
 #                Approach.status = "run" #Tätä ei tarvita koska Approach ei ole jatkuvasti päällä oleva thread.
 
 
-                if status != "run":
+                if status[0] != "run":
                     run_thread = threading.Thread(target=run, daemon=True, args=(recv_dict["stages"],))
                     run_thread.start()
-                    status = "run"
+                    status[0] = "run"
                     print("main status updated")
                 
 
             elif recv_dict["control"] == "terminate":
-                status = "waiting"
-                gps_cruise.status = "terminate"
-                steering_servo.status = "terminate"
+                status[0] = "waiting"
+#                gps_cruise.status = "terminate"
                 cur_stage = "Waiting for stage..."
 
     #        status = "waiting"
