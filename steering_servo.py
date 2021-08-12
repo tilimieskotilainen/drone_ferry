@@ -2,28 +2,31 @@ import sys
 import time
 import RPi.GPIO as GPIO
 import threading
+import board
+import busio
+import adafruit_vl53l0x
+import math
 
-GPIO.setmode(GPIO.BOARD) #Changed by EK
-GPIO_pins = (15, 12, 13, 11)
+
+GPIO.setmode(GPIO.BCM)
+GPIO_pins = (22, 18, 27, 17)
 gpiopins = GPIO_pins
 
-GPIO.setup(21, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) # Set pin 21 (pos_limit) to be an input pin and set pull-down
-GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) # Set pin 23 (neg limit) to be an input pin and set pull-down
-GPIO.setup(22, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) # Set pin 21 (pos_limit) to be an input pin and set pull-down
-
-left_lim = GPIO.input(22)
-mid_lim = GPIO.input(23)
-right_lim = GPIO.input(21)
-
-cur_step = 0
 wait = 0.005
 initdelay = 0.05
 steptype = "full"
+batch = 100 #How much to turn the stepper at a time
+
+i2c = busio.I2C(board.SCL, board.SDA)
+vl53 = adafruit_vl53l0x.VL53L0X(i2c)
+neutral = 115
+movement = 85 # mm in each direction from center
+threshold = 10
+angle_movement = 45
 
 
 def steer_direction(target):
-    
-    global cur_step
+
     """motor_run,  moves stepper motor based on 7 inputs
 
      (1) GPIOPins, type=list of ints 4 long, help="list of
@@ -85,48 +88,56 @@ def steer_direction(target):
         step_sequence_rev.reverse()
 
 
-        
-
-
         # Iterate through the pins turning them on and off.
         while True:
-            
-            if GPIO.input(22) == 0:
-                cur_step = -4880
-                print("Right limit")
-            if GPIO.input(21) == 0:
-                print("Left limit")
-                cur_step = 4900
 
-            if GPIO.input(23) == 0:
-                print("Middle")
-                cur_step = 0
+#Tähän if-lauseke joka vertaa sijaintia tahtotilaan
             
-            if target[0] - cur_step < -10 and GPIO.input(22) == 1:
-
-                for pin_list in step_sequence_rev:
-                    for pin in gpiopins:
-                        if pin in pin_list:
-                            GPIO.output(pin, True)
-                        else:
-                            GPIO.output(pin, False)
-                    time.sleep(wait)
-                    cur_step = cur_step - 1
-                    
-            elif target[0] - cur_step > 10 and GPIO.input(21) == 1:
-
-                for pin_list in step_sequence:
-                    for pin in gpiopins:
-                        if pin in pin_list:
-                            GPIO.output(pin, True)
-                        else:
-                            GPIO.output(pin, False)
-                    time.sleep(wait)
-                    cur_step = cur_step +1
+            target_position = neutral + target[0] / angle_movement * movement
             
+            if target[0] > angle_movement:
+                target_position = neutral + movement
+            elif target[0] < -angle_movement:
+                target_position = neutral - movement
 
-            print(cur_step)
+            print("Target position:", target_position)
+
+
+            measurement = []
+            for repeater in range(5):
+                measurement.append(vl53.range)
+                time.sleep(0.01)
+            tof = round(sum(measurement) / len(measurement))
+            print("TOF:", tof)
+            measurement.clear()
+
+            gap = target_position - tof
+            print("GAP:", gap)
             
+            if gap < -threshold:
+                for step in range(batch):
+                    for pin_list in step_sequence_rev:
+                        for pin in gpiopins:
+                            if pin in pin_list:
+                                GPIO.output(pin, True)
+                            else:
+                                GPIO.output(pin, False)
+                        time.sleep(wait)
+            elif gap > threshold:
+                for step in range(batch):
+                    for pin_list in step_sequence:
+                        for pin in gpiopins:
+                            if pin in pin_list:
+                                GPIO.output(pin, True)
+                            else:
+                                GPIO.output(pin, False)
+                        time.sleep(wait)
+
+            for pin in gpiopins:
+                GPIO.output(pin, False)
+            print("Pins off")
+
+
 
     finally:
         # switch off pins at end
@@ -134,9 +145,9 @@ def steer_direction(target):
             GPIO.output(pin, False)
 
 if __name__ == "__main__":
-    test = [0]
+    test = [-90]
     steering_thread = threading.Thread(target=steer_direction, args=(test,), daemon=True)
-    steering_thread.start() # Start compass thread
+    steering_thread.start()
     while True:
         print("Enter target angle")
         test[0] = int(input())

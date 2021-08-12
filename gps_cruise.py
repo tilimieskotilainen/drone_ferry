@@ -1,16 +1,10 @@
-#import serial
-#from pynmea import nmea
 import time
 import math
-#import json
-#import pixel_display
 import steering_servo
 import speed_control
 import compass_reader
-#import plotter
 import breadcrumb_calculator
 import offset_calculator
-#from backbone import status
 import read_gps
 
 

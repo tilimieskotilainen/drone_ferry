@@ -27,14 +27,12 @@ def read_gps():
                 lon_min = round(float(lon[0:3]) * 60 + float(lon[3:]), 6)
                 current_min = (lat_min, lon_min)
                 print(current_min)
-#                ser.close()
 
                 return(current_min)
         except:
             print("No GPS-signal")
             pass
         
-        
-        
-#read_gps()
-#ser.close()
+
+if __name__ == "__main__":
+    read_gps()

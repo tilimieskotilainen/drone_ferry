@@ -43,7 +43,7 @@ def read_gps():
     
 #Retuns compass heading from c program
 def read_heading():
-    heading = compass_reader.read_compass(True)
+    heading = compass_reader.heading
     print("Heading:", heading)
     return(heading)
 

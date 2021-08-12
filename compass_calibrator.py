@@ -14,8 +14,10 @@ y_list = []
 #Devine value n as zero to be used later for counting while-loop iterations
 n = 0
 
+steer_amount = [30]
+
 #Steer 30-degrees to the right
-steering_servo.steer_direction(30)
+#steering_servo.steer_direction(steer_amount)
 #Start propulsion at 50%
 speed_control.propulsion(50)
 
@@ -26,12 +28,12 @@ while n < 100:
     (x, y, z) = hmc5883l.getAxes() #Read readings from compass as variables x, y and z
     x_list.append(x) #Append latest x-reading in list of x-values
     y_list.append(y) #Append latest y-reading in list of y-values
-    time.sleep(0.5) #Wait 0.5 seconds
+    time.sleep(0.1) #Wait 0.5 seconds
     n = n + 1 #Add 1 to the value of n
     print(n, x, y)
 
 speed_control.propulsion(0) #Stop propulsion
-steering_servo.steer_direction(0) #Return steering to straight
+#steering_servo.steer_direction(0) #Return steering to straight
 
 x_min = min(x_list) #Find smallest value from list of x-values
 x_max = max(x_list) #Find largest value from list of x-values
