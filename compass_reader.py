@@ -29,7 +29,7 @@ def read_compass():
         x = x - offsets["x_offset"] #Make adjustment for x-offset according to offset value read from file above
         y = y - offsets["y_offset"] #Make adjustment for y-offset according to offset value read from file above
         
-        print("X:", x, "/ Y:", y)
+#        print("X:", x, "/ Y:", y)
         
         #In situations where y is zero we cannot use our trigonometry formulas, as division by zero makes the code crash
         #In these cases heading is always either -90 or 90 depending on whether x is negative or positive

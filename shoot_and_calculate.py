@@ -4,6 +4,7 @@ from picamera import PiCamera
 import time
 import cv2
 import numpy as np
+import datetime
 
 
 # initialize the camera and grab a reference to the raw camera capture
@@ -28,7 +29,7 @@ y_median = 0
 detect = False
 
 
-def calculate_diff():
+def calculate_diff(status):
     global diff
     global y_median
 
@@ -42,11 +43,16 @@ def calculate_diff():
 
     marker_list = []
     x_marker = 0
+    
+    # using datetime module
 
-    writer = cv2.VideoWriter('visual_navigation.mp4', cv2.VideoWriter_fourcc(*'DIVX'), frate, (x_res,y_res))
+    # ct stores current time
+    ct = datetime.datetime.now()
+    
+    writer = cv2.VideoWriter('Recording {}.mp4'.format(ct), cv2.VideoWriter_fourcc(*'DIVX'), frate, (x_res,y_res))
 
 
-    while True:
+    while status[0] == "run":
 #    for frame in camera: #.capture_continuous(rawCapture, format="bgr", use_video_port=True):
         # grab the raw NumPy array representing the image, then initialize the timestamp
         # and occupied/unoccupied text
@@ -135,10 +141,11 @@ def calculate_diff():
             break
         
 
-    writer.release()        
+    writer.release()
     cv2.destroyAllWindows()
     
 
 if __name__ == "__main__":
-    calculate_diff()
+    status = ["run"]
+    calculate_diff(status)
 

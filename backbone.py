@@ -15,6 +15,7 @@ import trip_dist_calculator
 import breadcrumb_calculator
 import gps_cruise
 import Approach
+import webbrowser
 
 
 #Variables for route phase selections
@@ -38,7 +39,7 @@ read_compass_thread = threading.Thread(target=compass_reader.read_compass, args=
 read_compass_thread.start() # Start compass thread
 steering_thread = threading.Thread(target=steering_servo.steer_direction, args=(status[0]), daemon=True) #Define compass thread
 steering_thread.start() # Start compass thread
-cam_nav = threading.Thread(target=shoot_and_calculate.calculate_diff, daemon=True)
+cam_nav = threading.Thread(target=shoot_and_calculate.calculate_diff, args=(status[0]), daemon=True)
 cam_nav.start()
 
 
@@ -174,6 +175,10 @@ async def test(websocket, path):
             break
 
         time.sleep(0.5)
+
+url = 'Robocar.html'
+webbrowser.open(url, new=2)  # open in new tab
+
 
 start_server = websockets.serve(test, "127.0.0.1", 5678)
 asyncio.get_event_loop().run_until_complete(start_server)
