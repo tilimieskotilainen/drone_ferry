@@ -59,7 +59,7 @@ def angles(from_coord, to_coord, heading):
 
 
 
-def captain(crumbs, closest_plus, status):
+def captain(crumbs, closest_plus, "run"):
     global dist_bc
     location_now = read_gps.current_min #Find out current location for plotting
     while status == "run":
