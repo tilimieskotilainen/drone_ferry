@@ -78,9 +78,7 @@ update_calc()
 
 #Funktio joka lähtee pyörimään, kun UI:ssa valitaan statukseksi "run"
 def run(stages):
-    print("Run started")
-
-    print("GPS Cruise started")
+    print("GPS Cruise starting")
     gps_cruise.captain(waypoints_list, closest_plus)
     print("GPS Cruise ended")
     
