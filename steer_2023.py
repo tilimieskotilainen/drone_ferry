@@ -1,9 +1,9 @@
 import RPi.GPIO as GPIO          
 from time import sleep
 
-in1 = 24
-in2 = 23
-en = 25
+in1 = 18 #OK23
+in2 = 27 #OK23
+en = 17 #OK23
 temp1=1
 
 GPIO.setmode(GPIO.BCM)
@@ -21,6 +21,8 @@ print("\n")
 
 while(1):
 
+    
+    
     x=raw_input()
     
     if x=='r':
