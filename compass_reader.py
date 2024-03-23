@@ -1,9 +1,10 @@
-from i2clibraries import i2c_hmc5883l
+#from i2clibraries import i2c_hmc5883l
+import smbus
 import time
 import math
 import json
 
-hmc5883l = i2c_hmc5883l.i2c_hmc5883l(1)
+#hmc5883l = i2c_hmc5883l.i2c_hmc5883l(1)
 
 PI = 3.14159265
 eranto = 9 #magnetic declination in Espoo (called eranto in Finnish)
@@ -14,22 +15,66 @@ of.close() #Close file
 
 heading = 0 #Initiate variable for heading
 
+# HMC5883L register addresses
+ADDRESS = 0x1E
+CONFIG_A = 0x00
+CONFIG_B = 0x01
+MODE = 0x02
+X_MSB = 0x03
+Z_MSB = 0x05
+Y_MSB = 0x07
+ 
+bus = smbus.SMBus(1) #Tuotu
+ 
+#setup tuotu
+def setup():
+    bus.write_byte_data(ADDRESS, CONFIG_A, 0x70)  # Set to 8 samples @ 15Hz
+    bus.write_byte_data(ADDRESS, CONFIG_B, 0x20)  # 1.3 gain LSb / Gauss 1090 (default)
+    bus.write_byte_data(ADDRESS, MODE, 0x00)  # Continuous measurement mode
+
+#read_raw_data tuotu 
+def read_raw_data(addr):
+    # Read raw 16-bit value
+    high = bus.read_byte_data(ADDRESS, addr)
+    low = bus.read_byte_data(ADDRESS, addr+1)
+    
+    # Combine them to get a 16-bit value
+    value = (high << 8) + low
+    if value > 32768:  # Adjust for 2's complement
+        value = value - 65536
+    return value
+
+
+
+
 def read_compass():
+    setup() #tuotu
+
 
     print("Compass running")
     
-    hmc5883l.setContinuousMode()
+#    hmc5883l.setContinuousMode()
     
     global heading #declare global variable to be able to change it's value within this function
 
     #Start loop to read compass again and again
     while True:
-        (x, y, z) = hmc5883l.getAxes() #Read values from compass and save as variables x, y and z
+        x = read_raw_data(X_MSB)
+        y = read_raw_data(Y_MSB)
+        z = read_raw_data(Z_MSB)
+        
+        #heading = compute_heading(x, y)
+        
+        
+        time.sleep(0.5)
+
+
+#        (x, y, z) = hmc5883l.getAxes() #Read values from compass and save as variables x, y and z
         
         x = x - offsets["x_offset"] #Make adjustment for x-offset according to offset value read from file above
         y = y - offsets["y_offset"] #Make adjustment for y-offset according to offset value read from file above
         
-#        print("X:", x, "/ Y:", y)
+        print("X:", x, "/ Y:", y)
         
         #In situations where y is zero we cannot use our trigonometry formulas, as division by zero makes the code crash
         #In these cases heading is always either -90 or 90 depending on whether x is negative or positive
@@ -59,7 +104,7 @@ def read_compass():
         if heading > 180:
             heading = heading - 360
             
-        print(heading)
+        print("Heading: ", heading)
 
         #Wait 0.1 seconds before reading the compass again
         time.sleep(0.1)

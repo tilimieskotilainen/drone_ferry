@@ -1,12 +1,13 @@
 import time
 import math
 import steering_servo
-import speed_control
+#import speed_control
 import compass_reader
 import breadcrumb_calculator
 import offset_calculator
 import read_gps
 
+status = "run"
 
 #closest_plus = 3
 
@@ -57,9 +58,7 @@ def angles(from_coord, to_coord, heading):
     bearings_dict = {"Target bearing":bearing, "Target relative bearing":rel_bearing}
     return(bearings_dict)
 
-
-
-def captain(crumbs, closest_plus, "run"):
+def captain(crumbs, closest_plus, status):
     global dist_bc
     location_now = read_gps.current_min #Find out current location for plotting
     while status == "run":
@@ -70,9 +69,9 @@ def captain(crumbs, closest_plus, "run"):
             bearings = angles(location_now, target_c, compass_reader.heading)
             rel_bearing = bearings["Target relative bearing"]
             steering_servo.angle = rel_bearing
-            speed_control.propulsion(40)
+            #speed_control.propulsion(40)
         else:
-            speed_control.propulsion(0)
+            #speed_control.propulsion(0)
             return("GPS Done")
         
         time.sleep(0.5)
