@@ -1,5 +1,19 @@
 import RPi.GPIO as GPIO          
 from time import sleep
+import board
+import busio
+import adafruit_vl53l0x
+import time
+
+tof_straight = 105
+tof_toler = 5
+
+tof_left = 85
+tof_right = 125
+
+
+i2c = busio.I2C(board.SCL, board.SDA)
+vl53 = adafruit_vl53l0x.VL53L0X(i2c)
 
 in1 = 18 #OK23
 in2 = 27 #OK23
@@ -19,12 +33,41 @@ print("The default speed & direction of motor is LOW & Forward.....")
 print("r-run s-stop f-forward b-backward l-low m-medium h-high e-exit")
 print("\n")    
 
-while(1):
+x = "s"
 
-    
-    
-    x=raw_input()
-    
+while True:
+
+#    x=raw_input()
+
+    tof = vl53.range
+    print("TOF:", tof)
+
+#jäi kesken kirjoittaa ehdot kääntämiselle
+
+    if rel_bearing < 0:
+        if tof > tof_left:
+            x = "b"
+        elif tof <= tof_left - tof_toler:
+           x = "f"
+        else:
+           x = "s"
+
+    if rel_bearing > 0:
+       if tof < tof_right:
+          x = "f"
+        elif tof >= tof_right + tof_toler:
+          x = "b"
+        else:
+          x = "s"
+
+    if rel_bearing == 0:
+       if tof > tof_straight:
+          x = "b"
+        elif tof < tof_straight:
+          x = "f"
+        elif tof == tof_straight:
+          x = "s"
+
     if x=='r':
         print("run")
         if(temp1==1):
@@ -43,36 +86,21 @@ while(1):
         print("stop")
         GPIO.output(in1,GPIO.LOW)
         GPIO.output(in2,GPIO.LOW)
-        x='z'
+#        x='z'
 
     elif x=='f':
         print("forward")
         GPIO.output(in1,GPIO.HIGH)
         GPIO.output(in2,GPIO.LOW)
         temp1=1
-        x='z'
+#        x='z'
 
     elif x=='b':
         print("backward")
         GPIO.output(in1,GPIO.LOW)
         GPIO.output(in2,GPIO.HIGH)
         temp1=0
-        x='z'
-
-    elif x=='l':
-        print("low")
-        p.ChangeDutyCycle(25)
-        x='z'
-
-    elif x=='m':
-        print("medium")
-        p.ChangeDutyCycle(50)
-        x='z'
-
-    elif x=='h':
-        print("high")
-        p.ChangeDutyCycle(75)
-        x='z'
+#        x='z'
      
     
     elif x=='e':
@@ -80,5 +108,6 @@ while(1):
         break
     
     else:
-        print("<<<  wrong data  >>>")
-        print("please enter the defined data to continue.....")
+        print("Problem with running steering motor")
+
+    time.sleep(0.5)
