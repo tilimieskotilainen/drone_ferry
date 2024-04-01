@@ -21,10 +21,13 @@ def read_gps():
         try:
             message = ser.readline().decode()
             if '$GNGGA' in message:
-                gngga = nmea.GPGGA()
-                gngga.parse(message)
-                lat = gngga.latitude
-                lon = gngga.longitude
+#                gngga = nmea.GPGGA()
+#                gngga.parse(message)
+                message.split(", ")
+                print(message)
+
+#                lat = gngga.latitude
+#                lon = gngga.longitude
                 lat_min = round(float(lat[0:2]) * 60 + float(lat[2:]), 6)
                 lon_min = round(float(lon[0:3]) * 60 + float(lon[3:]), 6)
                 current_min = (lat_min, lon_min)
