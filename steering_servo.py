@@ -5,6 +5,8 @@ import busio
 import adafruit_vl53l0x
 import time
 
+rel_bearing = 0 
+
 tof_straight = 105
 tof_toler = 5
 
@@ -53,7 +55,7 @@ while True:
            x = "s"
 
     if rel_bearing > 0:
-       if tof < tof_right:
+        if tof < tof_right:
           x = "f"
         elif tof >= tof_right + tof_toler:
           x = "b"
@@ -61,7 +63,7 @@ while True:
           x = "s"
 
     if rel_bearing == 0:
-       if tof > tof_straight:
+        if tof > tof_straight:
           x = "b"
         elif tof < tof_straight:
           x = "f"

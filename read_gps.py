@@ -3,8 +3,10 @@ from pynmea import nmea
 
 
 #Specs for GPS module
-ser = serial.Serial('/dev/serial0') #EPäSELVÄÄ MIKÄ DEVICE TÄHÄN
+ser = serial.Serial('/dev/serial0') #Aikaisemmin käytetty
+#ser = serial.Serial('/dev/ttyS0') #Laitettu 1.4.2024 testinä
 ser.baudrate=9600
+#ser.baudrate=115200
 
 current_min = (0.0, 0.0)
 
