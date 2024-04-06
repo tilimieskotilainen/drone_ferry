@@ -1,7 +1,6 @@
+
+
 #This is the backbone of the code, initiating the various stages of the journey based on trigger events
-
-status = ["init"]
-
 import json
 import threading
 import read_gps
@@ -17,6 +16,9 @@ import gps_cruise
 #import Approach
 #import webbrowser
 
+status = "run"
+
+print("alku")
 
 #Variables for route phase selections
 GPS_navi_selected = None
@@ -32,11 +34,15 @@ cur_stage = "Waiting for stages..."
 
 read_gps_thread = threading.Thread(target=read_gps.read_gps, args=(), daemon=True) #Define GPS thread
 read_gps_thread.start() # Start GPS thread
+print("yks")
+time.sleep(3)
 read_compass_thread = threading.Thread(target=compass_reader.read_compass, args=(), daemon=True) #Define compass thread
 read_compass_thread.start() # Start compass thread
-steering_thread = threading.Thread(target=steering_servo.steer_direction, args=(status[0]), daemon=True) #Define compass thread
+print("kaks")
+time.sleep(3)
+steering_thread = threading.Thread(target=steering_servo.steer, args=(status[0]), daemon=True) #Define compass thread
 steering_thread.start() # Start compass thread
-
+print("koli")
 
 #Function to update the initial calculations when prompted from UI
 def update_calc():
@@ -77,9 +83,9 @@ def update_calc():
 update_calc()
 
 #Funktio joka lähtee pyörimään, kun UI:ssa valitaan statukseksi "run"
-def run(stages):
+def run():
     print("GPS Cruise starting")
-    gps_cruise.captain(waypoints_list, closest_plus)
+    gps_cruise.captain(waypoints_list, closest_plus, status)
     print("GPS Cruise ended")
     
 #Käynnistää run-funktion ilman parametrejä

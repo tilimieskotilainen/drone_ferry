@@ -45,7 +45,7 @@ def read_raw_data(addr):
     return value
 
 
-
+read_cycle = 1
 
 def read_compass():
     setup() #tuotu
@@ -74,7 +74,7 @@ def read_compass():
         x = x - offsets["x_offset"] #Make adjustment for x-offset according to offset value read from file above
         y = y - offsets["y_offset"] #Make adjustment for y-offset according to offset value read from file above
         
-        print("X:", x, "/ Y:", y)
+#        print("X:", x, "/ Y:", y)
         
         #In situations where y is zero we cannot use our trigonometry formulas, as division by zero makes the code crash
         #In these cases heading is always either -90 or 90 depending on whether x is negative or positive
@@ -103,8 +103,13 @@ def read_compass():
         #Another adjustment in case the heading is over 180, in which case we need to flip it to the range between 0 and -180
         if heading > 180:
             heading = heading - 360
-            
-        print("Heading: ", heading)
+        
+        #Code to show compass readings once to confirm functioning. But only once to save terminal space.
+        global read_cycle
+        if read_cycle == 1:
+            print("Heading: ", heading)
+            print("Compass continuing without further prints")
+        read_cycle = read_cycle + 1
 
         #Wait 0.1 seconds before reading the compass again
         time.sleep(0.1)

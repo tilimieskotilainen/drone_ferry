@@ -4,9 +4,7 @@ from pynmea import nmea
 
 #Specs for GPS module
 ser = serial.Serial('/dev/serial0') #Aikaisemmin käytetty
-#ser = serial.Serial('/dev/ttyS0') #Laitettu 1.4.2024 testinä
 ser.baudrate=9600
-#ser.baudrate=115200
 
 current_min = (0.0, 0.0)
 
@@ -17,21 +15,30 @@ def read_gps():
 
     global current_min
 
+    #Variable for ensuring readings are printed only once
+    gps_read_cycle = 1
+
     while True:
         try:
             message = ser.readline().decode()
             if '$GNGGA' in message:
-#                gngga = nmea.GPGGA()
-#                gngga.parse(message)
                 message_list = message.split(",")
                 lat = message_list[2]
                 lon = message_list[4]
                 lat_min = round(float(lat[0:2]) * 60 + float(lat[2:]), 6)
                 lon_min = round(float(lon[0:3]) * 60 + float(lon[3:]), 6)
                 current_min = (lat_min, lon_min)
-                print(current_min)
 
-                return(current_min)
+
+                # Code to print gps results once, but only once.
+                if gps_read_cycle == 1:
+                    print(message)
+                    print (current_min)
+                    print ("GPS continuing to run without further prints")
+                gps_read_cycle = gps_read_cycle + 1
+
+
+#                return(current_min)
         except:
             print("No GPS-signal")
             pass

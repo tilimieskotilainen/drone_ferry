@@ -5,7 +5,7 @@ import busio
 import adafruit_vl53l0x
 import time
 
-rel_bearing = 0 
+rel_bearing = -30 
 
 tof_straight = 105
 tof_toler = 5
@@ -30,86 +30,98 @@ GPIO.output(in1,GPIO.LOW)
 GPIO.output(in2,GPIO.LOW)
 p=GPIO.PWM(en,1000)
 p.start(25)
-print("\n")
-print("The default speed & direction of motor is LOW & Forward.....")
-print("r-run s-stop f-forward b-backward l-low m-medium h-high e-exit")
-print("\n")    
+#print("\n")
+#print("The default speed & direction of motor is LOW & Forward.....")
+#print("r-run s-stop f-forward b-backward l-low m-medium h-high e-exit")
+#print("\n")    
 
 x = "s"
 
-while True:
+def steer():
 
-#    x=raw_input()
+  while True:
+
+  #    x=raw_input()
 
     tof = vl53.range
-    print("TOF:", tof)
 
-#jäi kesken kirjoittaa ehdot kääntämiselle
+  #Establishing the direction to run the motor based on TOF values vs. relative bearing
+  #NÄMÄ PITÄÄ KÄYDÄ LÄPI. LOGIIKKAVIRHEITÄ!
 
-    if rel_bearing < 0:
-        if tof > tof_left:
-            x = "b"
-        elif tof <= tof_left - tof_toler:
-           x = "f"
-        else:
-           x = "s"
-
-    if rel_bearing > 0:
-        if tof < tof_right:
-          x = "f"
-        elif tof >= tof_right + tof_toler:
-          x = "b"
-        else:
-          x = "s"
+    print("r-bear:", rel_bearing, "TOF:", tof, "straight TOF:", tof_straight)
 
     if rel_bearing == 0:
-        if tof > tof_straight:
-          x = "b"
-        elif tof < tof_straight:
-          x = "f"
-        elif tof == tof_straight:
-          x = "s"
-
-    if x=='r':
-        print("run")
-        if(temp1==1):
-         GPIO.output(in1,GPIO.HIGH)
-         GPIO.output(in2,GPIO.LOW)
-         print("forward")
-         x='z'
-        else:
-         GPIO.output(in1,GPIO.LOW)
-         GPIO.output(in2,GPIO.HIGH)
-         print("backward")
-         x='z'
+      if tof > tof_straight - tof_toler and tof < tof_straight + tof_toler:
+        x = "s"
+      elif tof > tof_straight:
+        x = "b"
+      elif tof < tof_straight:
+        x = "f"
 
 
-    elif x=='s':
-        print("stop")
-        GPIO.output(in1,GPIO.LOW)
-        GPIO.output(in2,GPIO.LOW)
-#        x='z'
+    elif rel_bearing < 0:
+      if tof > tof_left:
+        x = "b"
+      elif tof <= tof_left - tof_toler:
+        x = "f"
+      else:
+        x = "s"
+
+    elif rel_bearing > 0:
+      if tof < tof_right:
+        x = "f"
+      elif tof >= tof_right + tof_toler:
+        x = "b"
+      else:
+        x = "s"
+
+
+#Running the motor based on the direction determined above
+
+    """"
+      if x=='r':
+#          print("run")
+          if(temp1==1):
+            GPIO.output(in1,GPIO.HIGH)
+            GPIO.output(in2,GPIO.LOW)
+            x='z'
+          else:
+            GPIO.output(in1,GPIO.LOW)
+            GPIO.output(in2,GPIO.HIGH)
+            print("Steering TOF:", tof, ", running backward")
+            x='z'
+"""
+
+    if x=='s':
+      print("Steering motor stopped")
+      GPIO.output(in1,GPIO.LOW)
+      GPIO.output(in2,GPIO.LOW)
+  #    x='z'
 
     elif x=='f':
-        print("forward")
-        GPIO.output(in1,GPIO.HIGH)
-        GPIO.output(in2,GPIO.LOW)
-        temp1=1
-#        x='z'
+      print("Steering motor forward")
+      GPIO.output(in1,GPIO.HIGH)
+      GPIO.output(in2,GPIO.LOW)
+      temp1=1
+  #    x='z'
 
     elif x=='b':
-        print("backward")
-        GPIO.output(in1,GPIO.LOW)
-        GPIO.output(in2,GPIO.HIGH)
-        temp1=0
-#        x='z'
-     
-    
+      print("Steering motor backward")
+      GPIO.output(in1,GPIO.LOW)
+      GPIO.output(in2,GPIO.HIGH)
+      temp1=0
+  #    x='z'
+      
+      
     elif x=='e':
-        GPIO.cleanup()
-        break
-    
+      GPIO.cleanup()
+      break
+      
     else:
-        print("Problem with running steering motor")
+      print("Problem with running steering motor")
 
     time.sleep(0.5)
+
+
+if __name__ == "__main__":
+    steer()
