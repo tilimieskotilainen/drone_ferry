@@ -7,7 +7,7 @@ import breadcrumb_calculator
 import offset_calculator
 import read_gps
 
-status = "run"
+#status = "run"
 
 #closest_plus = 3
 
@@ -58,13 +58,14 @@ def angles(from_coord, to_coord, heading):
     bearings_dict = {"Target bearing":bearing, "Target relative bearing":rel_bearing}
     return(bearings_dict)
 
-def captain(waypoints_list, closest_plus, status):
+def captain(waypoints_list, closest_plus):
+    print("Captain started")
     global dist_bc
     location_now = read_gps.current_min #Find out current location for plotting
-    while status == "run":
-        print("GpS kruisailu")
+    while True:
         location_now = read_gps.current_min
         closest_c, target_c, crumbs_left = breadcrumb_calculator.closest_crumb(location_now, waypoints_list, closest_plus)
+        print("Crumb info:", closest_c, target_c, crumbs_left)
         if crumbs_left > 1:
             dist_bc = offset_calculator.offset_meter_calculator(location_now, closest_c)
             bearings = angles(location_now, target_c, compass_reader.heading)

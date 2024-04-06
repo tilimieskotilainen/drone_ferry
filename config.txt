@@ -1,1 +1,1 @@
-{"route": "koti.txt", "aim_ahead": "4", "crumb_interval": "7", "steer_damping": "2", "max_speed": "8", "direction": "forward", "stages": {"retreat": false, "turn": false, "gps_cruise": false, "approach": false}}
+{"route": "tonttari.txt", "aim_ahead": "4", "crumb_interval": "7", "steer_damping": "2", "max_speed": "8", "direction": "forward", "stages": {"retreat": false, "turn": false, "gps_cruise": false, "approach": false}}

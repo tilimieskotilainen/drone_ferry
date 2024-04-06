@@ -16,7 +16,7 @@ import gps_cruise
 #import Approach
 #import webbrowser
 
-status = "run"
+#status = "run"
 
 print("alku")
 
@@ -34,15 +34,16 @@ cur_stage = "Waiting for stages..."
 
 read_gps_thread = threading.Thread(target=read_gps.read_gps, args=(), daemon=True) #Define GPS thread
 read_gps_thread.start() # Start GPS thread
-print("yks")
+print("read_gps thread started")
 time.sleep(3)
 read_compass_thread = threading.Thread(target=compass_reader.read_compass, args=(), daemon=True) #Define compass thread
 read_compass_thread.start() # Start compass thread
-print("kaks")
+print("compass reader thread started")
 time.sleep(3)
-steering_thread = threading.Thread(target=steering_servo.steer, args=(status[0]), daemon=True) #Define compass thread
+steering_thread = threading.Thread(target=steering_servo.steer, args=(), daemon=True) #Define compass thread
 steering_thread.start() # Start compass thread
-print("koli")
+print("steering servo thread started")
+
 
 #Function to update the initial calculations when prompted from UI
 def update_calc():
@@ -85,7 +86,7 @@ update_calc()
 #Funktio joka lähtee pyörimään, kun UI:ssa valitaan statukseksi "run"
 def run():
     print("GPS Cruise starting")
-    gps_cruise.captain(waypoints_list, closest_plus, status)
+    gps_cruise.captain(waypoints_list, closest_plus)
     print("GPS Cruise ended")
     
 #Käynnistää run-funktion ilman parametrejä
