@@ -59,14 +59,13 @@ def angles(from_coord, to_coord, heading):
 def captain(waypoints_list, closest_plus):
     print("Captain started")
 #    breadcrumb_coordinates = []
-#    breadcrumb_coordinates = breadcrumb_calculator.breadcrumb_coordinates(waypoints_list)
-    breadcrumb_calculator.breadcrumb_coordinates()
-#    print("Breadcrumbs:", breadcrumb_coordinates)
+    breadcrumb_coordinates = breadcrumb_calculator.breadcrumb(waypoints_list)
+    print("Breadcrumbs:", breadcrumb_coordinates)
     global dist_bc
     location_now = read_gps.current_min #Find out current location for plotting
     while True:
         location_now = read_gps.current_min
-        closest_c, target_c, crumbs_left = breadcrumb_calculator.closest_crumb(location_now, waypoints_list, closest_plus)
+        closest_c, target_c, crumbs_left = breadcrumb_calculator.closest_crumb(location_now, breadcrumb_coordinates, closest_plus)
         print("Crumb info:", closest_c, target_c, crumbs_left)
         if crumbs_left > 1:
             dist_bc = offset_calculator.offset_meter_calculator(location_now, closest_c)
