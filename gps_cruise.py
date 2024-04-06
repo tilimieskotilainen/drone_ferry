@@ -11,10 +11,8 @@ import read_gps
 
 #closest_plus = 3
 
-#Waypoints information is stored in the following file in JSON format:
-#waypoints = "olari.txt"
 
-breadcrumb_coordinates = [] #Create an empty list to store the breadcrumb coordinates
+
 
 crumbs_left = 10 #Arbitrary number
 
@@ -60,6 +58,10 @@ def angles(from_coord, to_coord, heading):
 
 def captain(waypoints_list, closest_plus):
     print("Captain started")
+#    breadcrumb_coordinates = []
+#    breadcrumb_coordinates = breadcrumb_calculator.breadcrumb_coordinates(waypoints_list)
+    breadcrumb_calculator.breadcrumb_coordinates()
+#    print("Breadcrumbs:", breadcrumb_coordinates)
     global dist_bc
     location_now = read_gps.current_min #Find out current location for plotting
     while True:

@@ -6,9 +6,9 @@ breadcrumb_coordinates = []
 
 closest_index = 0
 
-def breadcrumb(wp_list):
+def breadcrumb():
 
-    waypoints_list = wp_list["waypoints"]
+    waypoints_list = backbone.wp_list["waypoints"]
     global breadcrumb_coordinates
 
     for wp in waypoints_list: #Take each coordinate pair within the waypoints list
@@ -32,7 +32,8 @@ def breadcrumb(wp_list):
             breadcrumb_coordinates.append(next_point) #Add previously calculated coordinates to the breadcrumb list
 
 #    print("Breadcrumbs calculated:", breadcrumb_coordinates)
-    return(breadcrumb_coordinates)
+    print("Breadcrumb coordinates:", breadcrumb_coordinates)
+#    return(breadcrumb_coordinates)
 
 #Calculates the closest breadcrumb and the target breadcrumb from the current location considering the "closest_plus" parameter
 def closest_crumb(location_now, crumbs, closest_plus):
