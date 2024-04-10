@@ -35,7 +35,8 @@ def update_vars(gui_input):
 
     #Tähän funktio joka päivittää config-tiedostossa olevat tiedot GUI:ssä määritetyillä arvoilla
     of = open("config.txt", "r")
-    config_dict = json.loads(of.read())
+    jou = of.read()
+    config_dict = json.loads(jou)
     print(config_dict)
     of.close()
 
@@ -66,8 +67,6 @@ def update_calc():
         sc.close()
         print("config read")
         #Number of waypoints in route
-
-        closest_plus = int(config["closest_plus"])
 
         of = open(config["route"]) #Open file determined in the config file
         route_points = json.loads(of.read()) #Read the contents of the opened file and assign it to the variable "waypoints_list"

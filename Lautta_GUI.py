@@ -1,6 +1,21 @@
 import PySimpleGUI as sg
 import Specs
+import json
 #import backbone
+
+sc = open("config.txt", "r") #Open file
+jou = sc.read()
+config_dict = json.loads(jou) #Read the contents of the opened file and assign it to the variable config
+sc.close()
+
+#Default values:
+def_aim_ahead = config_dict["aim_ahead"]
+def_steer_toler = config_dict["steer_toler"]
+def_tof_range = config_dict["tof_range"]
+
+
+print("config read")
+
 
 layout = [
     [sg.OptionMenu(values=("Select route", "Olari", "Tonttari", "Jarvi"), default_value = "Select route", expand_x=True)],
@@ -8,11 +23,11 @@ layout = [
     [sg.Button("Calculate route", expand_x=True, key="Calculate")],
 
     [[sg.Text("Aim")],
-     [sg.Slider(range=(1, 10), expand_x=True, default_value=3, resolution=1, tick_interval=1, orientation="horizontal", key="closest_plus")]],
-    [[sg.Text("Turn range (mm)")],
-     [sg.Slider(range=(10, 30), expand_x=True, default_value=20, resolution=1, tick_interval=5, orientation="horizontal", key="tof_range")]],    
-    [[sg.Text("Turn tolerance (deg)")],
-     [sg.Slider(range=(0, 20), expand_x=True, default_value=5, resolution=1, tick_interval=5, orientation="horizontal", key="steer_toler")]],
+     [sg.Slider(range=(1, 10), expand_x=True, default_value=def_aim_ahead, resolution=1, tick_interval=1, orientation="horizontal", key="closest_plus")]],
+    [[sg.Text("Steer range (mm)")],
+     [sg.Slider(range=(10, 30), expand_x=True, default_value=def_tof_range, resolution=1, tick_interval=5, orientation="horizontal", key="tof_range")]],    
+    [[sg.Text("Steer tolerance (deg)")],
+     [sg.Slider(range=(0, 20), expand_x=True, default_value=def_steer_toler, resolution=1, tick_interval=5, orientation="horizontal", key="steer_toler")]],
     [sg.Button("Update", expand_x=True, key="Update")],
     [sg.Text("Selected route"), sg.Text()],
     [sg.Text("Closest crumb"), sg.Text()],
