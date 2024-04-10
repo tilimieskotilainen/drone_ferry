@@ -21,14 +21,33 @@ closest_plus = 0
 
 #cur_stage = "Waiting for stages..."
 
+#Keskeisten variablien muuttaminen, jonka kutsuu GUI
 def update_vars(gui_input):
     global tof_toler
     global tof_range
     global steer_toler
     global closest_plus #Tämä on käynnistystä varten update_calc -funktiossa ja myöhempiä muutoksia varten update_vars funktiossa
 
+    #Variablien määrittäminen GUI:n lähettämien tietojen pohjalta
+    tof_range = gui_input["tof_range"]
+    steer_toler = gui_input["steer_toler"]
+    closest_plus = gui_input["closest_plus"]
 
-    #tähän koodi joka avaa gui_input -tiedot ja päivittää yllä olevat global variablet
+    #Tähän funktio joka päivittää config-tiedostossa olevat tiedot GUI:ssä määritetyillä arvoilla
+    of = open("config.txt", "r")
+    config_dict = json.loads(of.read())
+    print(config_dict)
+    of.close()
+
+    config_dict["aim_ahead"] = gui_input["closest_plus"]
+    config_dict["steer_toler"] = gui_input["steer_toler"]
+    config_dict["tof_range"] = gui_input["tof_range"]
+
+    config_json = json.dumps(config_dict)
+    wf = open("config.txt", "w")
+    wf.write(config_json)
+    wf.close()
+    print("Config updated")
 
 
 #Function to update the initial calculations when prompted from UI
@@ -48,7 +67,7 @@ def update_calc():
         print("config read")
         #Number of waypoints in route
 
-        closest_plus = int(config["aim_ahead"])
+        closest_plus = int(config["closest_plus"])
 
         of = open(config["route"]) #Open file determined in the config file
         route_points = json.loads(of.read()) #Read the contents of the opened file and assign it to the variable "waypoints_list"
@@ -66,4 +85,4 @@ def update_calc():
 
 
 #Käynnistyessä laskee ensimmäisen kerran matkan speksit
-update_calc()
+#update_calc()
