@@ -49,9 +49,6 @@ read_cycle = 1
 
 def read_compass():
     setup() #tuotu
-
-
-    print("Compass running")
     
 #    hmc5883l.setContinuousMode()
     
@@ -107,8 +104,7 @@ def read_compass():
         #Code to show compass readings once to confirm functioning. But only once to save terminal space.
         global read_cycle
         if read_cycle == 1:
-            print("Heading: ", heading)
-            print("Compass continuing without further prints")
+            print("Heading: ", heading, "| Compass continuing.")
         read_cycle = read_cycle + 1
 
         #Wait 0.1 seconds before reading the compass again

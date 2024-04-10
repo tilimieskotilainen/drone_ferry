@@ -46,19 +46,23 @@ def steer():
     tof = vl53.range
 
   #Establishing the direction to run the motor based on TOF values vs. relative bearing
-  #NÄMÄ PITÄÄ KÄYDÄ LÄPI. LOGIIKKAVIRHEITÄ!
 
     print("r-bear:", rel_bearing, "TOF:", tof, "straight TOF:", tof_straight)
 
+
+  #When desired direction (relative bearing) is straight, determine adjustments needed based on current steer orientation
     if rel_bearing == 0:
+      #If current steer orientation is straight +/- tolerance, stop motor
       if tof > tof_straight - tof_toler and tof < tof_straight + tof_toler:
         x = "s"
+      #If current steer orientation (TOF) is > straight, run motor backward. This elif is ignored when first if-statement is true.
       elif tof > tof_straight:
         x = "b"
+      #If current steer orientation (TOF) is < straight, run motor forward. This elif is ignored when first if-statement is true.
       elif tof < tof_straight:
         x = "f"
 
-
+    #When desired direction (relative bearing) is left, determine adjustments based on current steer orientation.
     elif rel_bearing < 0:
       if tof > tof_left:
         x = "b"
@@ -66,7 +70,8 @@ def steer():
         x = "f"
       else:
         x = "s"
-
+  
+    #When desired direction (relative bearing) is right, determine adjustments based on current steer orientation.
     elif rel_bearing > 0:
       if tof < tof_right:
         x = "f"
@@ -120,7 +125,7 @@ def steer():
     else:
       print("Problem with running steering motor")
 
-    time.sleep(0.5)
+    time.sleep(2)
 
 
 if __name__ == "__main__":

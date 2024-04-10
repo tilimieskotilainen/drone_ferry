@@ -7,31 +7,22 @@ import breadcrumb_calculator
 import offset_calculator
 import read_gps
 
-#status = "run"
-
-#closest_plus = 3
-
-
-
-
-crumbs_left = 10 #Arbitrary number
+crumbs_left = 10 #Arbitrary number for initializing
 
 dist_bc = 0
-
-#status = "jotain"
 
 #Calculates the bearing and relative bearing from the first coordinate to the second coordinate, considering current heading
 def angles(from_coord, to_coord, heading):
     offset_dict = offset_calculator.offset_meter_calculator(from_coord, to_coord)
     offset_y = offset_dict["offsets_met"][0]
     offset_x = offset_dict["offsets_met"][1]
-    
+
+
     #Rules to bypass calculations for special cases that would cause division error
     if offset_y == 0 and offset_x < 0:
         bearing = -90
     elif offset_y == 0 and offset_x > 0:
         bearing = 90
-
     #Calculation of bearings in most situations
     else:
         #Calculation of bearing angle
@@ -57,25 +48,22 @@ def angles(from_coord, to_coord, heading):
     return(bearings_dict)
 
 def captain(waypoints_list, closest_plus):
-    print("Captain started")
-#    breadcrumb_coordinates = []
     breadcrumb_coordinates = breadcrumb_calculator.breadcrumb(waypoints_list)
-    print("Breadcrumbs:", breadcrumb_coordinates)
+    print("Captain started, breadcrumbs:", breadcrumb_coordinates)
     global dist_bc
     location_now = read_gps.current_min #Find out current location for plotting
     while True:
         location_now = read_gps.current_min
         closest_c, target_c, crumbs_left = breadcrumb_calculator.closest_crumb(location_now, breadcrumb_coordinates, closest_plus)
-        print("Crumb info:", closest_c, target_c, crumbs_left)
+        print("Closest crumb:", closest_c, "Target crumb:", target_c, "Crumbs left:", crumbs_left)
         if crumbs_left > 1:
             dist_bc = offset_calculator.offset_meter_calculator(location_now, closest_c)
             bearings = angles(location_now, target_c, compass_reader.heading)
             rel_bearing = bearings["Target relative bearing"]
             steering_servo.angle = rel_bearing
-            #speed_control.propulsion(40)
         else:
-            #speed_control.propulsion(0)
+            print("Out of crumbs! Captain done.")
             return("GPS Done")
         
-        time.sleep(0.5)
+        time.sleep(2)
     return("GPS Terminated")
