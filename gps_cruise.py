@@ -6,6 +6,7 @@ import compass_reader
 import breadcrumb_calculator
 import offset_calculator
 import read_gps
+import Specs
 
 crumbs_left = 10 #Arbitrary number for initializing
 
@@ -47,12 +48,14 @@ def angles(from_coord, to_coord, heading):
     bearings_dict = {"Target bearing":bearing, "Target relative bearing":rel_bearing}
     return(bearings_dict)
 
-def captain(waypoints_list, closest_plus):
+def captain():
+    waypoints_list = Specs.waypoints_list
     breadcrumb_coordinates = breadcrumb_calculator.breadcrumb(waypoints_list)
     print("Captain started, breadcrumbs:", breadcrumb_coordinates)
     global dist_bc
     location_now = read_gps.current_min #Find out current location for plotting
     while True:
+        closest_plus = Specs.closest_plus
         location_now = read_gps.current_min
         closest_c, target_c, crumbs_left = breadcrumb_calculator.closest_crumb(location_now, breadcrumb_coordinates, closest_plus)
         print("Closest crumb:", closest_c, "Target crumb:", target_c, "Crumbs left:", crumbs_left)

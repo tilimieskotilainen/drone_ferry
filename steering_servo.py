@@ -4,16 +4,9 @@ import board
 import busio
 import adafruit_vl53l0x
 import time
+import Specs
 
 rel_bearing = -30 
-
-tof_straight = 105
-tof_toler = 5
-
-tof_left = 85
-tof_right = 125
-
-
 i2c = busio.I2C(board.SCL, board.SDA)
 vl53 = adafruit_vl53l0x.VL53L0X(i2c)
 
@@ -41,6 +34,14 @@ def steer():
 
   while True:
 
+    tof_straight = Specs.tof_straight
+    tof_toler = Specs.tof_toler
+    tof_range = Specs.tof_range
+    tof_left = tof_straight - tof_range
+    tof_right = tof_straight + tof_range
+    steer_toler = Specs.steer_toler
+
+
   #    x=raw_input()
 
     tof = vl53.range
@@ -50,8 +51,9 @@ def steer():
     print("r-bear:", rel_bearing, "TOF:", tof, "straight TOF:", tof_straight)
 
 
-  #When desired direction (relative bearing) is straight, determine adjustments needed based on current steer orientation
-    if rel_bearing == 0:
+  #When desired direction (relative bearing) is straight (+/- steering tolerance),
+  #determine adjustments needed based on current steer orientation
+    if rel_bearing > 0 - steer_toler and rel_bearing < 0 + steer_toler:
       #If current steer orientation is straight +/- tolerance, stop motor
       if tof > tof_straight - tof_toler and tof < tof_straight + tof_toler:
         x = "s"
