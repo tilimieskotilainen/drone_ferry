@@ -50,7 +50,7 @@ def angles(from_coord, to_coord, heading):
 
 def captain():
     waypoints_list = Specs.waypoints_list
-    breadcrumb_coordinates = breadcrumb_calculator.breadcrumb(waypoints_list)
+    breadcrumb_coordinates = Specs.breadcrumb_coordinates
     print("Captain started, breadcrumbs:", breadcrumb_coordinates)
     global dist_bc
     location_now = read_gps.current_min #Find out current location for plotting

@@ -15,12 +15,11 @@ def trip_dist_calculator(route):
 
     total_distance = 0
 
-    total_distance += offset_meter_calculator(route["start"], route["waypoints"][0])
-    total_distance += offset_meter_calculator(route["waypoints"][-1], route["end"])
+#    total_distance += offset_meter_calculator(route["start"], route["waypoints"][0])
+#    total_distance += offset_meter_calculator(route["waypoints"][-1], route["end"])
 
-    for point in range(1, len(route["waypoints"])): #Iterate through the indexes in the list, skipping 0
-    #0 is skipped because it is the start position, not to be used by the gps-leg of the journey
-        leg_offset = offset_meter_calculator(route["waypoints"][point - 1], route["waypoints"][point]) #Calcultes the offset for the leg, ie between the waypoint being looped over and the previous one
+    for point in range(len(route)): #Iterate through the indexes in the list, skipping 0
+        leg_offset = offset_meter_calculator(route[point - 1], route[point]) #Calcultes the offset for the leg, ie between the waypoint being looped over and the previous one
     #        print("Leg offset:", leg_offset)
         total_distance += leg_offset
 

@@ -13,11 +13,14 @@ steer_toler = 10
 #Variables for route phase selections
 #GPS_navi_selected = None
 config = None
+route = None
 waypoints_list = None
 route_points = None
 wp_num = None
+bc_num = None
 trip_dist = 0
 closest_plus = 0
+breadcrumb_coordinates = None
 
 #cur_stage = "Waiting for stages..."
 
@@ -57,9 +60,11 @@ def update_calc():
     global config
     global waypoints_list
     global wp_num
+    global bc_num
     global trip_dist
     global route_points
     global closest_plus #Tämä on käynnistystä varten update_calc -funktiossa ja myöhempiä muutoksia varten update_vars funktiossa
+    global breadcrumb_coordinates
 
     try:
         sc = open("config.txt", "r") #Open file
@@ -68,13 +73,18 @@ def update_calc():
         print("config read")
         #Number of waypoints in route
 
-        of = open(config["route"]) #Open file determined in the config file
-        route_points = json.loads(of.read()) #Read the contents of the opened file and assign it to the variable "waypoints_list"
-        waypoints_list = route_points["waypoints"]
+        of = open("routes.txt", "r") #Open file determined in the config file
+        routes_dict = json.loads(of.read()) #Read the contents of the opened file and assign it to the variable "waypoints_list"
         of.close()
+        waypoints_list = routes_dict[route]
+        print("Route:", waypoints_list)
 
-        trip_dist = round(trip_dist_calculator.trip_dist_calculator(route_points),1)
+        trip_dist = round(trip_dist_calculator.trip_dist_calculator(waypoints_list),1)
         wp_num = str(len(waypoints_list))
+
+        breadcrumb_coordinates = breadcrumb_calculator.breadcrumb(waypoints_list)
+        bc_num = len(breadcrumb_coordinates)
+
         print("Trip configured | Trip dist:", trip_dist, "m | Waypoints:", wp_num)
 
 
